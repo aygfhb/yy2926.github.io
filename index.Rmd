@@ -1,7 +1,26 @@
 ---
-title: "Holy cow!"
+title: "Yuxin Yang"
 ---
 
-### I have a webpage!
+### Biostatistics Master Program
 
-And I can put all kinds of stuff on it!
+### Columbia Mailman School of Public Health
+
+<img src="Yuxin.jpg" style="width:45%">
+
+### About me and this website
+Welcome to my webpage! I am a first-year Biostatistics student at Columbia University. I get my B.S. degree in Statistics and Mathematics at the University of Florida in 2018. Additional information can be found on my [resume](resume.html). 
+This personal webpage is designed on purpose for my Data Science class. I will improve the website and provide more information if needed in the future. 
+
+
+### Homework 4 Problem 2
+Problem 2 of Homework 4 can be found [here](homework.html).
+
+
+### Contact Information
+
+Yuxin Yang <br> 
+Address: 100 Haven Avenue Tower 3 24G <br> 
+New York, 10032 <br> 
+Telephone: 352-871-753 <br> 
+Email: [yy2926@cumc.columbia.edu](mailto:yy2926@cumc.columbia.edu) <br> 
