@@ -64,7 +64,8 @@ nyc_new_data = nyc_inspections %>%
 nyc_most_popular = nyc_inspections %>%
   janitor::clean_names() %>%
   na.omit %>%
-  filter(cuisine_description == "American" | cuisine_description == "Chinese" | cuisine_description == "Pizza" | cuisine_description == "Latin (Cuban, Dominican, Puerto Rican, South & Central American)" | cuisine_description == "Italian" | cuisine_description == "Mexican" | cuisine_description == "Japanese") %>%
+  filter(cuisine_description == "American" | cuisine_description == "Chinese" | cuisine_description == "Spanish" | cuisine_description == "Mexican" | cuisine_description == "Italian" | cuisine_description == "Japanese" | cuisine_description == "Caribbean") %>%
   select(cuisine_description,grade,score) 
-nyc_most_popular 
+nyc_most_popular %>%
+  plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
 ```
