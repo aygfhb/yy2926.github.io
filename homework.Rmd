@@ -15,10 +15,7 @@ library(httr)
 library(jsonlite)
 ```
 
-Column {data-width=650}
------------------------------------------------------------------------
-
-```{r read data, include = FALSE}
+```{r read data}
 get_all_inspections = function(url) {
   
   all_inspections = vector("list", length = 0)
@@ -55,13 +52,16 @@ nyc_inspections = get_all_inspections(url) %>%
   bind_rows() 
 ```
 
-```{r clean data, include = FALSE}
+```{r clean data}
 nyc_new_data = nyc_inspections %>%
   janitor::clean_names() %>%
   select(cuisine_description,grade,score) %>%
   group_by(cuisine_description) %>%
   summarize(n_obs = n()) 
 ```
+
+Column {data-width=500}
+-----------------------------------------------------------------------
 ### Chart A
 ```{r}
 nyc_most_popular = nyc_inspections %>%
@@ -73,7 +73,7 @@ nyc_most_popular %>%
   plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2") %>%
   layout(title = 'Score of seven most popular cuisine type')
 ```
-Column {data-width=350}
+Column {data-width=500}
 -----------------------------------------------------------------------
 ### Chart B
 ```{r}
@@ -95,5 +95,4 @@ plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 ```
-
 
