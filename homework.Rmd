@@ -80,7 +80,7 @@ Column {data-width=500}
 nyc_most_popular %>% 
   group_by(cuisine_description,grade) %>%
   summarize(n_obs = n()) %>%
-  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description) %>%
+  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') %>%
 layout(title = 'Counts of Grade by different cuisine type')
 
 ```
@@ -96,3 +96,6 @@ plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 ```
 
+```{r}
+rmarkdown::render("homework.Rmd", output_format = "flex_dashboard")
+```
