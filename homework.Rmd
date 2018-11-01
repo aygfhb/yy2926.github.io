@@ -1,7 +1,8 @@
 ---
-title: "Untitled"
+title: "Seven Most Popular Cuisine type in New Yrok City"
 output: 
   flexdashboard::flex_dashboard:
+    self_contained: false
     orientation: columns
     vertical_layout: fill
 ---
@@ -15,7 +16,10 @@ library(httr)
 library(jsonlite)
 ```
 
-```{r}
+Column {data-width=650}
+-----------------------------------------------------------------------
+
+```{r read data, include = FALSE}
 get_all_inspections = function(url) {
   
   all_inspections = vector("list", length = 0)
@@ -52,14 +56,14 @@ nyc_inspections = get_all_inspections(url) %>%
   bind_rows() 
 ```
 
-```{r}
+```{r clean data, include = FALSE}
 nyc_new_data = nyc_inspections %>%
   janitor::clean_names() %>%
   select(cuisine_description,grade,score) %>%
   group_by(cuisine_description) %>%
   summarize(n_obs = n()) 
 ```
-
+### Chart A
 ```{r}
 nyc_most_popular = nyc_inspections %>%
   janitor::clean_names() %>%
@@ -67,20 +71,21 @@ nyc_most_popular = nyc_inspections %>%
   filter(cuisine_description == "American" | cuisine_description == "Chinese" | cuisine_description == "Spanish" | cuisine_description == "Mexican" | cuisine_description == "Italian" | cuisine_description == "Japanese" | cuisine_description == "Caribbean") %>%
   select(cuisine_description,grade,score) 
 nyc_most_popular %>%
-  plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
+  plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2") %>%
+  layout(title = 'Score of seven most popular cuisine type')
 ```
 
+### Chart B
 ```{r}
 nyc_most_popular %>% 
   group_by(cuisine_description,grade) %>%
   summarize(n_obs = n()) %>%
-  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description)
+  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description) %>%
+layout(title = 'Counts of Grade by different cuisine type')
 
 ```
- %>%
-  plot_ly( x = ~cuisine_description, y = ~grade, type = 'bar') %>%
-  layout(yaxis = list(title = 'Count'), barmode = 'stack')
-  
+
+### Chart C
 ```{r}
 nyc_most_popular %>%
   group_by(cuisine_description) %>%
