@@ -72,7 +72,9 @@ nyc_most_popular %>%
 
 ```{r}
 nyc_most_popular %>% 
-  group_by(cuisine_description,grade)
+  group_by(cuisine_description,grade) %>%
+  summarize(n_obs = n()) %>%
+  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description)
 
 ```
  %>%
