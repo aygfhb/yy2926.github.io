@@ -69,3 +69,22 @@ nyc_most_popular = nyc_inspections %>%
 nyc_most_popular %>%
   plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
 ```
+
+```{r}
+nyc_most_popular %>% 
+  group_by(cuisine_description,grade)
+
+```
+ %>%
+  plot_ly( x = ~cuisine_description, y = ~grade, type = 'bar') %>%
+  layout(yaxis = list(title = 'Count'), barmode = 'stack')
+  
+```{r}
+nyc_most_popular %>%
+  group_by(cuisine_description) %>%
+  summarize(n_obs = n()) %>%
+plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
+  layout(title = 'Seven Most Popular National Cuisine In NY City',
+         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+         yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+```
