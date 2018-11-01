@@ -2,8 +2,7 @@
 title: "Seven Most Popular Cuisine type in New Yrok City"
 output: 
   flexdashboard::flex_dashboard:
-    orientation: columns
-    vertical_layout: fill
+  orientation: vertical
 ---
 
 ```{r setup, include=FALSE}
@@ -59,7 +58,9 @@ nyc_new_data = nyc_inspections %>%
 
 Column {data-width=500}
 -----------------------------------------------------------------------
+
 ### Counts of Grade by different cuisine type
+
 ```{r}
 nyc_most_popular = nyc_inspections %>%
   janitor::clean_names() %>%
@@ -71,15 +72,19 @@ nyc_most_popular %>%
   summarize(n_obs = n()) %>%
   plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') 
 ```
+
 Column {data-width=650}
 -----------------------------------------------------------------------
+
 ### Score of seven most popular cuisine type
+
 ```{r}
 nyc_most_popular %>%
   plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
 ```
 
-### Seven Most Popular National Cuisine In NY City
+### Seven Most Popular National Cuisine In New York City
+
 ```{r}
 nyc_most_popular %>%
   group_by(cuisine_description) %>%
@@ -87,8 +92,9 @@ nyc_most_popular %>%
 plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
   layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
-
 ```
+
+
 
 
 
