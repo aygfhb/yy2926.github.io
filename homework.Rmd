@@ -2,7 +2,6 @@
 title: "Seven Most Popular Cuisine type in New Yrok City"
 output: 
   flexdashboard::flex_dashboard:
-    self_contained: false
     orientation: columns
     vertical_layout: fill
 ---
@@ -74,7 +73,8 @@ nyc_most_popular %>%
   plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2") %>%
   layout(title = 'Score of seven most popular cuisine type')
 ```
-
+Column {data-width=350}
+-----------------------------------------------------------------------
 ### Chart B
 ```{r}
 nyc_most_popular %>% 
@@ -95,3 +95,5 @@ plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
          xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
 ```
+
+
