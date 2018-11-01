@@ -1,5 +1,5 @@
 ---
-title: "Seven Most Popular Cuisine type in New Yrok City"
+title: "Food Safety of Seven Most Popular Exotic Cuisine in New Yrok City"
 output: 
   flexdashboard::flex_dashboard:
   orientation: vertical
@@ -65,25 +65,26 @@ Column {data-width=500}
 nyc_most_popular = nyc_inspections %>%
   janitor::clean_names() %>%
   na.omit %>%
-  filter(cuisine_description == "American" | cuisine_description == "Chinese" | cuisine_description == "Spanish" | cuisine_description == "Mexican" | cuisine_description == "Italian" | cuisine_description == "Japanese" | cuisine_description == "Caribbean") %>%
+  filter(cuisine_description == "Indian" | cuisine_description == "Chinese" | cuisine_description == "Spanish" | cuisine_description == "Mexican" | cuisine_description == "Italian" | cuisine_description == "Japanese" | cuisine_description == "Caribbean") %>%
   select(cuisine_description,grade,score) 
 nyc_most_popular %>% 
   group_by(cuisine_description,grade) %>%
   summarize(n_obs = n()) %>%
-  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') 
+  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') %>%
+  layout(xaxis = list(title = "Grade"), yaxis = list(title = "Number"))
 ```
 
 Column {data-width=650}
 -----------------------------------------------------------------------
 
-### Score of seven most popular cuisine type
+### Score of seven most popular exotic cuisine type
 
 ```{r}
 nyc_most_popular %>%
   plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
 ```
 
-### Seven Most Popular National Cuisine In New York City
+### Proportion of Seven Most Popular exotic Cuisine In New York City
 
 ```{r}
 nyc_most_popular %>%
