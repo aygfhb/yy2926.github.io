@@ -50,9 +50,6 @@ url = "https://data.cityofnewyork.us/resource/9w7m-hzhe.json"
 
 nyc_inspections = get_all_inspections(url) %>%
   bind_rows() 
-```
-
-```{r clean data}
 nyc_new_data = nyc_inspections %>%
   janitor::clean_names() %>%
   select(cuisine_description,grade,score) %>%
@@ -62,7 +59,7 @@ nyc_new_data = nyc_inspections %>%
 
 Column {data-width=500}
 -----------------------------------------------------------------------
-### Chart A
+### Counts of Grade by different cuisine type
 ```{r}
 nyc_most_popular = nyc_inspections %>%
   janitor::clean_names() %>%
@@ -72,29 +69,26 @@ nyc_most_popular = nyc_inspections %>%
 nyc_most_popular %>% 
   group_by(cuisine_description,grade) %>%
   summarize(n_obs = n()) %>%
-  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') %>%
-layout(title = 'Counts of Grade by different cuisine type')
-
+  plot_ly(x=~grade , y=~n_obs , color= ~cuisine_description, type = 'bar') 
 ```
 Column {data-width=650}
 -----------------------------------------------------------------------
-### Chart B
+### Score of seven most popular cuisine type
 ```{r}
 nyc_most_popular %>%
-  plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2") %>%
-  layout(title = 'Score of seven most popular cuisine type')
-
+  plot_ly( y = ~score, color = ~cuisine_description, type = "box",colors = "Set2")
 ```
 
-### Chart C
+### Seven Most Popular National Cuisine In NY City
 ```{r}
 nyc_most_popular %>%
   group_by(cuisine_description) %>%
   summarize(n_obs = n()) %>%
 plot_ly(labels= ~cuisine_description, values= ~n_obs, type= 'pie' ) %>%
-  layout(title = 'Seven Most Popular National Cuisine In NY City',
-         xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
+  layout(xaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE),
          yaxis = list(showgrid = FALSE, zeroline = FALSE, showticklabels = FALSE))
+
 ```
+
 
 
