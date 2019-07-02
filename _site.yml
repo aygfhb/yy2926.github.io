@@ -10,6 +10,4 @@ navbar:
 output:
   html_document:
     highlight: textmate
-    include:
-      after_body: footer.html
-    css: styles.css
+    
