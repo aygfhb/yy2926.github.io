@@ -1,16 +1,15 @@
-name: "Yuxin Yang!"
+name: "Yuxin Yang's Website"
 output_dir: "."
 navbar:
-  title: "Home"
-  left: 
-    - text: "Resume"
-      href: resume.html
-    - text: "Homework"
-      href: homework.html
+  title: "Yuxin Yang"
   right:
-    - icon: fa-envelope fa-lg
-      href: mailto:<yy2926@cumc.columbia.edu>
-    - icon: fa-github fa-lg
-      href: http://github.com/aygfhb/
+    - icon: fa-bar-chart fa-lg
+      href: hmework.html 
+    - icon: fa-file-alt fa-lg
+      href: resume.html
 output:
   html_document:
+    highlight: textmate
+    include:
+      after_body: footer.html
+    css: styles.css
