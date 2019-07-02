@@ -4,7 +4,7 @@ navbar:
   title: "Yuxin Yang"
   right:
     - icon: fa-bar-chart fa-lg
-      href: hmework.html 
+      href: homework.html 
     - icon: fa-file-alt fa-lg
       href: resume.html
 output:
