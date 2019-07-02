@@ -1,12 +1,11 @@
 ---
-title: "Yuxin Yang"
+title: "Welcome"
 ---
 
-### Biostatistics Master Program
+<link href="./styles.css" rel="stylesheet"></link> 
 
-### Columbia Mailman School of Public Health
 
-<img src="Yuxin.jpg" style="width:45%">
+<img class="profile" width="150" height="150" src="Yuxin.jpg" />
 
 ### About me and this website
 Welcome to my webpage! I am a first-year Biostatistics student at Columbia University. I get my B.S. degree in Statistics and Mathematics at the University of Florida in 2018. Additional information can be found on my [resume](resume.html). 
