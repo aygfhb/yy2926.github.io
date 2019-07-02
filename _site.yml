@@ -1,13 +1,13 @@
-name: "Yuxin Yang's Website"
+name: "Yay internet!"
 output_dir: "."
 navbar:
-  title: "Yuxin Yang"
+  title: "Home"
   right:
-    - icon: fa-bar-chart fa-lg
-      href: homework.html 
-    - icon: fa-file-alt fa-lg
-      href: resume.html
+    - text: "About"
+      href: about.html
+    - icon: fa-envelope fa-lg
+      href: mailto:<yy2926@columbia.edu>
+    - icon: fa-github fa-lg
+      href: https://github.com/yy2926/
 output:
-  html_document:
-    highlight: textmate
-    
+  html_document
