@@ -1,7 +1,11 @@
 ---
-title: "Holy cow!"
+title: "Welcome"
 ---
 
-### I have a webpage!
+<link href="./styles.css" rel="stylesheet"></link> 
 
-And I can put all kinds of stuff on it!
+<img class="profile" width="150" height="150" src="Yuxin.jpg" />
+
+Hello! My name is Yuxin Yang. I'm a second-year Master's student in Biostatistics at Columbia University's Mailman School of Public Health. Prior to Columbia, I was at University of Florida for Statistics, Mathmetics and Acturial science.
+
+<h1 class="welcome">Featured Projects</h1>
