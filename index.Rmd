@@ -11,4 +11,36 @@ title: "Welcome!"
 
 Hello! My name is Yuxin Yang. I'm a second-year Master's student in Biostatistics at Columbia University's Mailman School of Public Health. Prior to Columbia, I was at University of Florida for Statistics, Mathmetics and Acturial science.
 
+I'm interested in the development of new analytic statistical techniques and 
+
 <h1 class="welcome">Featured Projects</h1>
+
+```{r, echo = FALSE, message = FALSE, warning = FALSE }
+library(tidyverse)
+library(fontawesome)
+tib = tibble(
+  `Project Name` = c(
+    '<a href="./predicting-hurricane-trajectory.html">Predicting Hurricane Trajectory</a>',
+    '<a href="./improving-confidence-intervals.html">Improving Confidence Intervals with Bootstrap Smoothing</a>',
+    '<a href="./logistic-lasso-for-breast-cancer.html">Implementing Logistic-LASSO for Predicting Breast Cancer</a>',
+    '<a href="./checking-activity-changes.html">Checking Activity Changes with Accerlerometer Data</a>'
+  ),
+  `Description` = c(
+    "Using the Metropolis Algorithm to predict the path of hurricanes",
+    "Examining which proteins are significant to predicting Down syndrome in mice",
+    "Using coordinate-wise optimization to recreate the logistic LASSO function in glmnet",
+    "Crunching minute-scale accelerometer data to look for increases in activity in a stroke patient"
+  )
+)
+knitr::kable(tib)
+```
+
+I have a running list of my [other projects](./projects.html) here as well. If interested, you can also have a peek at my [resume](./resume.html). 
+
+<h1 class="welcome">Contact</h1>
+
+<p class="icons">
+  <a href="https://github.com/yy2926">`r fa("github")`</a>
+  <a href="https://www.linkedin.com/in/yuxin-yang-367010116/">`r fa("linkedin")`</a>
+  <a href="mailto:yy2926@columbia.com">`r fa("envelope")`</a>
+</p>
