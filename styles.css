@@ -1,0 +1,60 @@
+@import url('https://fonts.googleapis.com/css?family=Chakra+Petch|Roboto&display=swap');
+
+.navbar {
+  font-family: "Chakra Petch";
+  background-color: white;
+  border: none;
+  color: black;
+}
+
+.navbar-brand {
+  font-size: 24px;
+}
+
+h1, h2 {
+  font-family : "Chakra Petch";
+}
+
+p {
+  font-family: "Roboto";
+}
+
+.welcome {
+  text-align: center;
+}
+
+.profile {
+  display: block;
+  margin: 0 auto;
+}
+
+.icons {
+  font-size: 48px;
+  text-align: center;
+}
+
+.gallery {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+th {
+  padding: 10px;
+}
+
+.proj-img {
+  height: 150px;
+  width: 150px;
+  border: solid 3px black;
+  border-radius: 50%;
+}
+
+.filler {
+  border: solid 3px white;
+  border-radius: 50%;
+}
+
+.caption {
+  text-align: center;
+  color: rgba(211, 211, 211, 0.8);
+}
