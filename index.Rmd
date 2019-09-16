@@ -19,14 +19,12 @@ tib = tibble(
   `Project Name` = c(
     '<a href="./predicting-hurricane-trajectory.html">Predicting Hurricane Trajectory</a>',
     '<a href="./improving-confidence-intervals.html">Improving Confidence Intervals with Bootstrap Smoothing</a>',
-    '<a href="./logistic-lasso-for-breast-cancer.html">Implementing Logistic-LASSO for Predicting Breast Cancer</a>',
-    '<a href="./checking-activity-changes.html">Checking Activity Changes with Accerlerometer Data</a>'
+    '<a href="./logistic-lasso-for-breast-cancer.html">Implementing Logistic-LASSO for Predicting Breast Cancer</a>'
   ),
   `Description` = c(
-    "Using the Metropolis Algorithm to predict the path of hurricanes",
-    "Examining which proteins are significant to predicting Down syndrome in mice",
-    "Using coordinate-wise optimization to recreate the logistic LASSO function in glmnet",
-    "Crunching minute-scale accelerometer data to look for increases in activity in a stroke patient"
+    "Using the Metropolis-Hasting Algorithm to predict the path of Atlantic hurricanes",
+    "Examining the significant proteins to Down syndrome in mice",
+    "Using coordinate-wise optimization to recreate the fused lasso"
   )
 )
 knitr::kable(tib)
