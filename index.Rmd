@@ -4,9 +4,6 @@ title: "Welcome!"
 
 <link href="./styles.css" rel="stylesheet"></link> 
 
-<center>
-<img class="profile" width="250" height="250" src="Yuxin1.gif">
-</center>
 
 
 Hello! My name is Yuxin Yang. I'm a second-year Master's student in Biostatistics at Columbia University's Mailman School of Public Health. Prior to Columbia, I was at University of Florida for Statistics, Mathmetics and Acturial science.
