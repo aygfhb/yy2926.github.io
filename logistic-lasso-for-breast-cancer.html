@@ -519,7 +519,7 @@ div.tocify {
 <div id="data-cleaning" class="section level1">
 <h1>Data Cleaning</h1>
 <p>The breast cancer dataset has 569 row and 33 columns. That is, there are 569 observations of breast cancer diagnosis (malignant or benign), each with 30 potential features. The three columns that were not useful covariates are: “id,” “diagnosis” (outcome variable) and a non-relevant column of NA values. The “diagnosis” outcome variable specifies if the image is coming from a cancer tissue or a benign one.</p>
-<p>Lasso is sensitive to the scale of the predictors, so we standardized the dataset to make sure those larger scales predictors will not dominate over those with smaller ranges of values. Many of the columns in the data are highly correlated with each other, so we drop features that show a high correlation, with cutoff 0.85.</p>
+<p>Lasso is sensitive to the scale of the predictors, so we standardized the dataset to make sure those larger scales predictors will not dominate over those with smaller ranges of values. Many of the columns in the data are highly correlated with each other, so we drop features that show a high correlation, with cutoff 0.85.The following is the correlation plot, and 17 variables are kept in the model.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">require</span>(knitr)</a>
 <a class="sourceLine" id="cb1-2" title="2"><span class="kw">require</span>(survival)</a>
 <a class="sourceLine" id="cb1-3" title="3"><span class="kw">require</span>(quantreg)</a>
@@ -576,6 +576,150 @@ div.tocify {
 <img src="pic/corr_plot.png" alt="Correlation Plot" />
 <p class="caption">Correlation Plot</p>
 </div>
+</div>
+<div id="proposed-model" class="section level1">
+<h1>Proposed Model</h1>
+<div id="newton-raphson-optimization" class="section level2">
+<h2>Newton-Raphson optimization</h2>
+<p>The logistic model for malignant cancer is</p>
+<p><span class="math display">\[P(Y_i = 1 | X= x) = \frac{exp(\beta_0 + \boldsymbol{X_i}\boldsymbol{\beta})}{1+exp(\beta_0 +\boldsymbol{X_i}\boldsymbol{\beta})}\]</span></p>
+<p>We sought to minimize the log-likelihood function <span class="math inline">\(l(y;\boldsymbol{\beta})\)</span> <span class="math display">\[l(\beta) = \sum_{i=1}^{n}(Y_i(\beta_0+\boldsymbol{X_i\beta}) - log(1+exp(\beta_0 + \boldsymbol{X_i\beta})))\]</span> The Newton-Raphson optimization is fullfilled by using gradient and Hessian matrix, and the coefficients are update in each steps with the following equation:</p>
+<p><span class="math display">\[\boldsymbol{\beta_{i+1}} = \boldsymbol{\beta_{i}} - [\bigtriangledown^2l(\boldsymbol{\beta_i)}]^{-1} \bigtriangledown l(\boldsymbol{\beta_i})\]</span></p>
+</div>
+<div id="the-algorithm" class="section level2">
+<h2>The Algorithm</h2>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1"><span class="co">##hessian matrix</span></a>
+<a class="sourceLine" id="cb2-2" title="2">hess &lt;-<span class="st"> </span><span class="cf">function</span>(x, p){</a>
+<a class="sourceLine" id="cb2-3" title="3">  hess =<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, <span class="kw">ncol</span>(x), <span class="kw">ncol</span>(x))</a>
+<a class="sourceLine" id="cb2-4" title="4">  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(x)){</a>
+<a class="sourceLine" id="cb2-5" title="5">    a &lt;-<span class="st"> </span>x[i,] <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(x[i,]) <span class="op">*</span><span class="st"> </span>p[i] <span class="op">*</span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>p[i])</a>
+<a class="sourceLine" id="cb2-6" title="6">    hess &lt;-<span class="st"> </span>hess <span class="op">+</span>a</a>
+<a class="sourceLine" id="cb2-7" title="7">  }</a>
+<a class="sourceLine" id="cb2-8" title="8">  <span class="kw">return</span>(<span class="op">-</span>hess)</a>
+<a class="sourceLine" id="cb2-9" title="9">}</a>
+<a class="sourceLine" id="cb2-10" title="10"><span class="co">##logistic model</span></a>
+<a class="sourceLine" id="cb2-11" title="11">logisticstuff &lt;-<span class="st"> </span><span class="cf">function</span>(x,y, betavec){</a>
+<a class="sourceLine" id="cb2-12" title="12">  u &lt;-<span class="st"> </span>x <span class="op">%*%</span><span class="st"> </span>betavec</a>
+<a class="sourceLine" id="cb2-13" title="13">  expu &lt;-<span class="st"> </span><span class="kw">exp</span>(u)</a>
+<a class="sourceLine" id="cb2-14" title="14">  <span class="co">## create loglike for large p</span></a>
+<a class="sourceLine" id="cb2-15" title="15">  loglik &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="kw">nrow</span>(x), <span class="dt">mode =</span> <span class="st">&quot;numeric&quot;</span>)</a>
+<a class="sourceLine" id="cb2-16" title="16">  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">nrow</span>(x))</a>
+<a class="sourceLine" id="cb2-17" title="17">    loglik[i] &lt;-<span class="st"> </span>y[i]<span class="op">*</span>u[i] <span class="op">-</span><span class="st"> </span><span class="kw">log</span>(<span class="dv">1</span><span class="op">+</span>expu[i])</a>
+<a class="sourceLine" id="cb2-18" title="18">  <span class="co">## log-likelihood at betavec</span></a>
+<a class="sourceLine" id="cb2-19" title="19">  loglik &lt;-<span class="st"> </span><span class="kw">sum</span>(loglik)</a>
+<a class="sourceLine" id="cb2-20" title="20">  p &lt;-<span class="st"> </span>expu <span class="op">/</span><span class="st"> </span>(<span class="dv">1</span><span class="op">+</span>expu)</a>
+<a class="sourceLine" id="cb2-21" title="21">  <span class="co">## P(Y_i = 1 | x_i)</span></a>
+<a class="sourceLine" id="cb2-22" title="22">  grad &lt;-<span class="st"> </span><span class="kw">vector</span>(<span class="kw">length</span>(betavec), <span class="dt">mode =</span> <span class="st">&quot;numeric&quot;</span>)</a>
+<a class="sourceLine" id="cb2-23" title="23">  <span class="co">## gradient at betavec</span></a>
+<a class="sourceLine" id="cb2-24" title="24">  <span class="cf">for</span>(i <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="dv">18</span>)</a>
+<a class="sourceLine" id="cb2-25" title="25">    grad[i] &lt;-<span class="st"> </span><span class="kw">sum</span>(<span class="kw">t</span>(x[,i]) <span class="op">%*%</span><span class="st"> </span>(y <span class="op">-</span><span class="st"> </span>p))</a>
+<a class="sourceLine" id="cb2-26" title="26">  <span class="co">## function for hess due to large p value</span></a>
+<a class="sourceLine" id="cb2-27" title="27">  Hess &lt;-<span class="st"> </span><span class="kw">hess</span>(x , p)</a>
+<a class="sourceLine" id="cb2-28" title="28">  <span class="kw">return</span>(<span class="kw">list</span>(<span class="dt">loglik =</span> loglik, <span class="dt">grad =</span> grad, <span class="dt">Hess =</span> Hess))</a>
+<a class="sourceLine" id="cb2-29" title="29">}</a>
+<a class="sourceLine" id="cb2-30" title="30"></a>
+<a class="sourceLine" id="cb2-31" title="31">NewtonRaphson &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, func, start, <span class="dt">maxiter =</span> <span class="dv">15</span>, <span class="dt">tol =</span> <span class="fl">1e-5</span>) {</a>
+<a class="sourceLine" id="cb2-32" title="32">  i &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb2-33" title="33">  cur &lt;-<span class="st"> </span>start</a>
+<a class="sourceLine" id="cb2-34" title="34">  stuff&lt;-<span class="st"> </span><span class="kw">func</span>(x,y, cur)</a>
+<a class="sourceLine" id="cb2-35" title="35">  res &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, cur)</a>
+<a class="sourceLine" id="cb2-36" title="36">  prevloglik &lt;-<span class="st"> </span><span class="op">-</span><span class="ot">Inf</span></a>
+<a class="sourceLine" id="cb2-37" title="37">  <span class="cf">while</span>(i <span class="op">&lt;</span><span class="st"> </span>maxiter <span class="op">&amp;&amp;</span><span class="st"> </span><span class="kw">abs</span>(stuff<span class="op">$</span>loglik <span class="op">-</span><span class="st"> </span>prevloglik) <span class="op">&gt;</span><span class="st"> </span>tol){</a>
+<a class="sourceLine" id="cb2-38" title="38">    i &lt;-<span class="st"> </span>i<span class="op">+</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-39" title="39">    prevloglik &lt;-<span class="st"> </span>stuff<span class="op">$</span>loglik</a>
+<a class="sourceLine" id="cb2-40" title="40">    prev &lt;-<span class="st"> </span>cur</a>
+<a class="sourceLine" id="cb2-41" title="41">    cur &lt;-<span class="st"> </span>prev <span class="op">-</span><span class="st"> </span><span class="kw">solve</span>(stuff<span class="op">$</span>Hess) <span class="op">%*%</span><span class="st"> </span>stuff<span class="op">$</span>grad</a>
+<a class="sourceLine" id="cb2-42" title="42">    stuff &lt;-<span class="st"> </span><span class="kw">func</span>(x,y, cur)</a>
+<a class="sourceLine" id="cb2-43" title="43">    res &lt;-<span class="st"> </span><span class="kw">rbind</span>(res,<span class="kw">c</span>(i,cur))</a>
+<a class="sourceLine" id="cb2-44" title="44">  }</a>
+<a class="sourceLine" id="cb2-45" title="45">  <span class="kw">return</span>(res)</a>
+<a class="sourceLine" id="cb2-46" title="46">}</a></code></pre></div>
+</div>
+<div id="the-logistic-lasso-model-with-descending-coordinatewise" class="section level2">
+<h2>The Logistic-Lasso model with descending coordinatewise</h2>
+<p>The Logistic-Lasso model for malignant cancer is given by log-li <span class="math display">\[ f_{obj} =  min_{(\beta_0, \boldsymbol{\beta})}[ {\frac{1}{2n} \sum_{i = 1}^{n} w_i(z_i - \beta_0 - \boldsymbol{x_i\beta}^2)} + \lambda \sum_{j = 0}^{p}|\beta_j|] \]</span> <span class="math inline">\(w_i\)</span> is the working weight and <span class="math inline">\(z_i\)</span> is the working response,<span class="math inline">\(\beta_0\)</span> is the intercept and <span class="math inline">\(\mathbf{\beta}\)</span> is the set variable coeffients. Each variable coeffients <span class="math inline">\(\beta_{j}\)</span> was optimized using the following equation: <span class="math display">\[\tilde{\beta_j} = \frac{S(\sum_i\omega_ix_{i,j}(y_i - \tilde{y}_i^{(-j)}), \gamma)}{\sum\omega_ix^2_{i,j}}\]</span> where <span class="math inline">\(S\)</span> is the weighted soft threshold function, <span class="math inline">\(y^{-j}\)</span> is the response without <span class="math inline">\(\beta_j\)</span> and <span class="math inline">\(\gamma\)</span> is the threshold to be used on all the <span class="math inline">\(\beta_j\)</span>. Our algorithm continues while the number of iterations does not 1000 and the approximate log-likelihood of current parameter estimates exceeds the <span class="math inline">\(1^{-5}\)</span>.We proceed by performing 5-fold cross-validation to search for the optimal <span class="math inline">\(\lambda\)</span>. The optimal <span class="math inline">\(\lambda\)</span> will be the one that minimizes the test MSE.</p>
+</div>
+<div id="the-algorithm-1" class="section level2">
+<h2>The Algorithm</h2>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb3-1" title="1"><span class="co"># x: variables matrix (does not include vector of 1&#39;s for intercept)</span></a>
+<a class="sourceLine" id="cb3-2" title="2"><span class="co"># y: binary response variable (malignant vs. benign)</span></a>
+<a class="sourceLine" id="cb3-3" title="3"><span class="co"># beta: starting values of beta parameters</span></a>
+<a class="sourceLine" id="cb3-4" title="4"><span class="co"># lambda: penalty on l1 regularization</span></a>
+<a class="sourceLine" id="cb3-5" title="5"></a>
+<a class="sourceLine" id="cb3-6" title="6">func.logLasso.cd &lt;-<span class="st"> </span><span class="cf">function</span>(x, y, beta, lambda, <span class="dt">tol =</span> <span class="fl">10e-6</span>, <span class="dt">maxiter =</span> <span class="dv">1000</span>){</a>
+<a class="sourceLine" id="cb3-7" title="7">  </a>
+<a class="sourceLine" id="cb3-8" title="8">  <span class="co"># Initialize parameters</span></a>
+<a class="sourceLine" id="cb3-9" title="9">  beta0 &lt;-<span class="st"> </span><span class="dv">1</span><span class="op">/</span><span class="kw">length</span>(y) <span class="op">*</span><span class="st"> </span><span class="kw">sum</span>(y <span class="op">-</span><span class="st"> </span>x <span class="op">%*%</span><span class="st"> </span>beta)</a>
+<a class="sourceLine" id="cb3-10" title="10">  </a>
+<a class="sourceLine" id="cb3-11" title="11">  cur.p &lt;-<span class="st"> </span><span class="kw">func.cur.p</span>(<span class="dt">beta0 =</span> beta0, <span class="dt">beta =</span> beta, <span class="dt">x =</span> x) </a>
+<a class="sourceLine" id="cb3-12" title="12">  cur.w &lt;-<span class="st"> </span><span class="kw">func.weights</span>(<span class="dt">p =</span> cur.p<span class="op">$</span>p)</a>
+<a class="sourceLine" id="cb3-13" title="13">  cur.z &lt;-<span class="st"> </span><span class="kw">func.resp</span>(<span class="dt">u =</span> cur.p<span class="op">$</span>u,</a>
+<a class="sourceLine" id="cb3-14" title="14">                       <span class="dt">y =</span> y,</a>
+<a class="sourceLine" id="cb3-15" title="15">                       <span class="dt">p =</span> cur.p<span class="op">$</span>p)</a>
+<a class="sourceLine" id="cb3-16" title="16">  </a>
+<a class="sourceLine" id="cb3-17" title="17">  <span class="co"># Quadratic approx. of loglik at starting beta values</span></a>
+<a class="sourceLine" id="cb3-18" title="18">  l_Q &lt;-<span class="st"> </span><span class="kw">func.obj</span>(<span class="dt">u =</span> cur.p<span class="op">$</span>u, </a>
+<a class="sourceLine" id="cb3-19" title="19">                    <span class="dt">x =</span> x,</a>
+<a class="sourceLine" id="cb3-20" title="20">                    <span class="dt">w =</span> cur.w,</a>
+<a class="sourceLine" id="cb3-21" title="21">                    <span class="dt">z =</span> cur.z,</a>
+<a class="sourceLine" id="cb3-22" title="22">                    <span class="dt">lambda =</span> lambda,</a>
+<a class="sourceLine" id="cb3-23" title="23">                    <span class="dt">beta =</span> beta)</a>
+<a class="sourceLine" id="cb3-24" title="24">  i &lt;-<span class="st"> </span><span class="dv">0</span> </a>
+<a class="sourceLine" id="cb3-25" title="25">  track.param &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dt">iter =</span> <span class="dv">0</span>, l_Q, beta0,beta)</a>
+<a class="sourceLine" id="cb3-26" title="26">  </a>
+<a class="sourceLine" id="cb3-27" title="27">  <span class="co"># Updating parameters </span></a>
+<a class="sourceLine" id="cb3-28" title="28">  <span class="cf">while</span> (i <span class="op">&lt;</span><span class="st"> </span>maxiter <span class="op">&amp;&amp;</span><span class="st"> </span>l_Q <span class="op">&gt;</span><span class="st"> </span>tol) {</a>
+<a class="sourceLine" id="cb3-29" title="29">    </a>
+<a class="sourceLine" id="cb3-30" title="30">    i =<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb3-31" title="31">    </a>
+<a class="sourceLine" id="cb3-32" title="32">    <span class="cf">for</span> (j <span class="cf">in</span> <span class="dv">1</span><span class="op">:</span><span class="kw">length</span>(beta)) {</a>
+<a class="sourceLine" id="cb3-33" title="33">    </a>
+<a class="sourceLine" id="cb3-34" title="34">      <span class="co"># Run coordinate descent algorithm on penalized weighted-LS to update betas</span></a>
+<a class="sourceLine" id="cb3-35" title="35">      r &lt;-<span class="st"> </span>y <span class="op">-</span><span class="st"> </span>(x <span class="op">%*%</span><span class="st"> </span>beta) <span class="co"># current residual</span></a>
+<a class="sourceLine" id="cb3-36" title="36">      y.diff &lt;-<span class="st"> </span>r <span class="op">+</span><span class="st"> </span>(x[,j] <span class="op">*</span><span class="st"> </span>beta[j])</a>
+<a class="sourceLine" id="cb3-37" title="37">      weighted.beta &lt;-<span class="st"> </span><span class="kw">sum</span>(cur.w <span class="op">*</span><span class="st"> </span>x[,j] <span class="op">*</span><span class="st"> </span>y.diff)</a>
+<a class="sourceLine" id="cb3-38" title="38">      <span class="co"># update betas</span></a>
+<a class="sourceLine" id="cb3-39" title="39">      beta[j] &lt;-<span class="st"> </span><span class="kw">func.soft</span>(<span class="dt">beta =</span> weighted.beta, <span class="dt">gamma =</span> lambda)<span class="op">/</span><span class="st"> </span><span class="kw">sum</span>(cur.w <span class="op">*</span><span class="st"> </span>x[,j]<span class="op">^</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb3-40" title="40">    }</a>
+<a class="sourceLine" id="cb3-41" title="41">    </a>
+<a class="sourceLine" id="cb3-42" title="42">    track.param &lt;-<span class="st"> </span><span class="kw">rbind</span>(track.param, <span class="kw">c</span>(<span class="dt">iter =</span> i, l_Q, beta0, beta))</a>
+<a class="sourceLine" id="cb3-43" title="43">    </a>
+<a class="sourceLine" id="cb3-44" title="44">    <span class="co"># Update quadratic approx. of loglik using updated parameters</span></a>
+<a class="sourceLine" id="cb3-45" title="45">    beta0 &lt;-<span class="st"> </span><span class="kw">mean</span>(y) <span class="op">-</span><span class="st"> </span><span class="kw">sum</span>(<span class="kw">colMeans</span>(x) <span class="op">*</span><span class="st"> </span>beta)</a>
+<a class="sourceLine" id="cb3-46" title="46">    cur.p &lt;-<span class="st"> </span><span class="kw">func.cur.p</span>(<span class="dt">beta0 =</span> beta0, <span class="dt">beta =</span> beta, <span class="dt">x =</span> x) </a>
+<a class="sourceLine" id="cb3-47" title="47">    cur.w &lt;-<span class="st"> </span><span class="kw">func.weights</span>(<span class="dt">p =</span> cur.p<span class="op">$</span>p)</a>
+<a class="sourceLine" id="cb3-48" title="48">    cur.z &lt;-<span class="st"> </span><span class="kw">func.resp</span>(<span class="dt">u =</span> cur.p<span class="op">$</span>u,</a>
+<a class="sourceLine" id="cb3-49" title="49">                       <span class="dt">y =</span> y,</a>
+<a class="sourceLine" id="cb3-50" title="50">                       <span class="dt">p =</span> cur.p<span class="op">$</span>p)</a>
+<a class="sourceLine" id="cb3-51" title="51">    l_Q &lt;-<span class="st"> </span><span class="kw">func.obj</span>(<span class="dt">u =</span> cur.p<span class="op">$</span>u, </a>
+<a class="sourceLine" id="cb3-52" title="52">                    <span class="dt">x =</span> X,</a>
+<a class="sourceLine" id="cb3-53" title="53">                    <span class="dt">w =</span> cur.w,</a>
+<a class="sourceLine" id="cb3-54" title="54">                    <span class="dt">z =</span> cur.z,</a>
+<a class="sourceLine" id="cb3-55" title="55">                    <span class="dt">lambda =</span> lambda,</a>
+<a class="sourceLine" id="cb3-56" title="56">                    <span class="dt">beta =</span> beta)</a>
+<a class="sourceLine" id="cb3-57" title="57">    </a>
+<a class="sourceLine" id="cb3-58" title="58">     </a>
+<a class="sourceLine" id="cb3-59" title="59">  }</a>
+<a class="sourceLine" id="cb3-60" title="60">  </a>
+<a class="sourceLine" id="cb3-61" title="61">  track.param &lt;-<span class="st"> </span><span class="kw">as.data.frame</span>(track.param)</a>
+<a class="sourceLine" id="cb3-62" title="62">  <span class="kw">names</span>(track.param) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;iter&quot;</span>, <span class="st">&quot;approx_loglik&quot;</span>, <span class="st">&quot;intercept&quot;</span>, <span class="kw">colnames</span>(X))</a>
+<a class="sourceLine" id="cb3-63" title="63">  </a>
+<a class="sourceLine" id="cb3-64" title="64">  final.coef &lt;-<span class="st"> </span><span class="kw">tail</span>(track.param[,<span class="op">-</span><span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">2</span>)], <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb3-65" title="65">  <span class="kw">return</span>(final.coef)</a>
+<a class="sourceLine" id="cb3-66" title="66">}</a>
+<a class="sourceLine" id="cb3-67" title="67"></a>
+<a class="sourceLine" id="cb3-68" title="68"><span class="co"># Try lambda = e^(1/2)</span></a>
+<a class="sourceLine" id="cb3-69" title="69"><span class="co">#func.logLasso.cd(x = X, y = Y, beta = rep(0, ncol(X)), exp(.5))</span></a></code></pre></div>
+<div class="figure">
+<img src="pic/logistic_lambda.png" alt="5-fold cv for different \lambda" />
+<p class="caption">5-fold cv for different <span class="math inline">\(\lambda\)</span></p>
+</div>
+</div>
+</div>
+<div id="results" class="section level1">
+<h1>Results</h1>
+<p>This project is to explore the predictivity of two different models on predicting the cancer malignancy. The results coefficients are listed in the following table. From the table, we can find the possible variables we can use to predict the cancer status based on the imaging data. We may observe that the Newton-Raphson algorithm converges much faster than the descending coordinate logistic lasso. However, Logistic-LASSO produced a model that was more accurate and effective at predicting cancer malignancy.</p>
+<p><img src="pic/logistic_prediction.png" alt="Prediction Performance" /> <img src="pic/logistic_table.png" alt="Estimation Table" /></p>
 </div>
 
 

@@ -19,7 +19,7 @@ In this report, we intend to propose a Logistic-Lasso model to select features a
 
 The breast cancer dataset has 569 row and 33 columns. That is, there are 569 observations of breast cancer diagnosis (malignant or benign), each with 30 potential features. The three columns that were not useful covariates are: "id," "diagnosis" (outcome variable) and a non-relevant column of NA values. The "diagnosis" outcome variable specifies if the image is coming from a cancer tissue or a benign one.
 
-Lasso is sensitive to the scale of the predictors, so we standardized the dataset to make sure those larger scales predictors will not dominate over those with smaller ranges of values. Many of the columns in the data are highly correlated with each other, so we drop features that show a high correlation, with cutoff 0.85.
+Lasso is sensitive to the scale of the predictors, so we standardized the dataset to make sure those larger scales predictors will not dominate over those with smaller ranges of values. Many of the columns in the data are highly correlated with each other, so we drop features that show a high correlation, with cutoff 0.85.The following is the correlation plot, and 17 variables are kept in the model.
 
 ```{r, eval=FALSE}
 require(knitr)
@@ -76,3 +76,158 @@ corrplot(corr, method="circle",
          col = brewer.pal(n = 10, name = "RdYlBu"))
 ```
 ![Correlation Plot](./pic/corr_plot.png)
+
+# Proposed Model
+
+## Newton-Raphson optimization
+
+The logistic model for malignant cancer is 
+
+$$P(Y_i = 1 | X= x) = \frac{exp(\beta_0 + \boldsymbol{X_i}\boldsymbol{\beta})}{1+exp(\beta_0 +\boldsymbol{X_i}\boldsymbol{\beta})}$$
+
+We sought to minimize the log-likelihood function $l(y;\boldsymbol{\beta})$ 
+$$l(\beta) = \sum_{i=1}^{n}(Y_i(\beta_0+\boldsymbol{X_i\beta}) - log(1+exp(\beta_0 + \boldsymbol{X_i\beta})))$$
+The Newton-Raphson optimization is fullfilled by using gradient and Hessian matrix, and the coefficients are update in each steps with the following equation:
+
+$$\boldsymbol{\beta_{i+1}} = \boldsymbol{\beta_{i}} - [\bigtriangledown^2l(\boldsymbol{\beta_i)}]^{-1} \bigtriangledown l(\boldsymbol{\beta_i})$$
+
+## The Algorithm
+```{r eval=FALSE}
+##hessian matrix
+hess <- function(x, p){
+  hess = matrix(0, ncol(x), ncol(x))
+  for (i in 1:nrow(x)){
+    a <- x[i,] %*% t(x[i,]) * p[i] *(1 - p[i])
+    hess <- hess +a
+  }
+  return(-hess)
+}
+##logistic model
+logisticstuff <- function(x,y, betavec){
+  u <- x %*% betavec
+  expu <- exp(u)
+  ## create loglike for large p
+  loglik <- vector(nrow(x), mode = "numeric")
+  for(i in 1:nrow(x))
+    loglik[i] <- y[i]*u[i] - log(1+expu[i])
+  ## log-likelihood at betavec
+  loglik <- sum(loglik)
+  p <- expu / (1+expu)
+  ## P(Y_i = 1 | x_i)
+  grad <- vector(length(betavec), mode = "numeric")
+  ## gradient at betavec
+  for(i in 1:18)
+    grad[i] <- sum(t(x[,i]) %*% (y - p))
+  ## function for hess due to large p value
+  Hess <- hess(x , p)
+  return(list(loglik = loglik, grad = grad, Hess = Hess))
+}
+
+NewtonRaphson <- function(x, y, func, start, maxiter = 15, tol = 1e-5) {
+  i <- 0
+  cur <- start
+  stuff<- func(x,y, cur)
+  res <- c(0, cur)
+  prevloglik <- -Inf
+  while(i < maxiter && abs(stuff$loglik - prevloglik) > tol){
+    i <- i+1
+    prevloglik <- stuff$loglik
+    prev <- cur
+    cur <- prev - solve(stuff$Hess) %*% stuff$grad
+    stuff <- func(x,y, cur)
+    res <- rbind(res,c(i,cur))
+  }
+  return(res)
+}
+
+```
+
+## The Logistic-Lasso model with descending coordinatewise
+The Logistic-Lasso model for malignant cancer is given by log-li
+$$ f_{obj} =  min_{(\beta_0, \boldsymbol{\beta})}[ {\frac{1}{2n} \sum_{i = 1}^{n} w_i(z_i - \beta_0 - \boldsymbol{x_i\beta}^2)} + \lambda \sum_{j = 0}^{p}|\beta_j|] $$
+$w_i$ is the working weight and $z_i$ is the working response,$\beta_0$ is the intercept and $\mathbf{\beta}$ is the set variable coeffients.
+Each variable coeffients $\beta_{j}$ was optimized using the following equation:
+$$\tilde{\beta_j} = \frac{S(\sum_i\omega_ix_{i,j}(y_i - \tilde{y}_i^{(-j)}), \gamma)}{\sum\omega_ix^2_{i,j}}$$
+where $S$ is the weighted soft threshold function, $y^{-j}$ is the response without $\beta_j$ and $\gamma$ is the threshold to be used on all the $\beta_j$. Our algorithm continues while the number of iterations does not 1000 and the approximate log-likelihood of current parameter estimates exceeds the $1^{-5}$.We proceed by performing 5-fold cross-validation to search for the optimal $\lambda$. The optimal $\lambda$ will be the one that minimizes the test MSE.
+
+## The Algorithm
+```{r logistic lasso CD,eval=FALSE}
+# x: variables matrix (does not include vector of 1's for intercept)
+# y: binary response variable (malignant vs. benign)
+# beta: starting values of beta parameters
+# lambda: penalty on l1 regularization
+
+func.logLasso.cd <- function(x, y, beta, lambda, tol = 10e-6, maxiter = 1000){
+  
+  # Initialize parameters
+  beta0 <- 1/length(y) * sum(y - x %*% beta)
+  
+  cur.p <- func.cur.p(beta0 = beta0, beta = beta, x = x) 
+  cur.w <- func.weights(p = cur.p$p)
+  cur.z <- func.resp(u = cur.p$u,
+                       y = y,
+                       p = cur.p$p)
+  
+  # Quadratic approx. of loglik at starting beta values
+  l_Q <- func.obj(u = cur.p$u, 
+                    x = x,
+                    w = cur.w,
+                    z = cur.z,
+                    lambda = lambda,
+                    beta = beta)
+  i <- 0 
+  track.param <- c(iter = 0, l_Q, beta0,beta)
+  
+  # Updating parameters 
+  while (i < maxiter && l_Q > tol) {
+    
+    i = i + 1
+    
+    for (j in 1:length(beta)) {
+    
+      # Run coordinate descent algorithm on penalized weighted-LS to update betas
+      r <- y - (x %*% beta) # current residual
+      y.diff <- r + (x[,j] * beta[j])
+      weighted.beta <- sum(cur.w * x[,j] * y.diff)
+      # update betas
+      beta[j] <- func.soft(beta = weighted.beta, gamma = lambda)/ sum(cur.w * x[,j]^2)
+    }
+    
+    track.param <- rbind(track.param, c(iter = i, l_Q, beta0, beta))
+    
+    # Update quadratic approx. of loglik using updated parameters
+    beta0 <- mean(y) - sum(colMeans(x) * beta)
+    cur.p <- func.cur.p(beta0 = beta0, beta = beta, x = x) 
+    cur.w <- func.weights(p = cur.p$p)
+    cur.z <- func.resp(u = cur.p$u,
+                       y = y,
+                       p = cur.p$p)
+    l_Q <- func.obj(u = cur.p$u, 
+                    x = X,
+                    w = cur.w,
+                    z = cur.z,
+                    lambda = lambda,
+                    beta = beta)
+    
+     
+  }
+  
+  track.param <- as.data.frame(track.param)
+  names(track.param) <- c("iter", "approx_loglik", "intercept", colnames(X))
+  
+  final.coef <- tail(track.param[,-c(1:2)], 1)
+  return(final.coef)
+}
+
+# Try lambda = e^(1/2)
+#func.logLasso.cd(x = X, y = Y, beta = rep(0, ncol(X)), exp(.5))
+```
+
+
+![5-fold cv for different $\lambda$](./pic/logistic_lambda.png)
+
+# Results
+This project is to explore the predictivity of two different models on predicting the cancer malignancy. The results coefficients are listed in the following table. From the table, we can find the possible variables we can use to predict the cancer status based on the imaging data. We may observe that the Newton-Raphson algorithm converges much faster than the descending coordinate logistic lasso. However, Logistic-LASSO produced a model that was more accurate and effective at predicting cancer malignancy. 
+
+![Prediction Performance](./pic/logistic_prediction.png)
+![Estimation Table](./pic/logistic_table.png)
