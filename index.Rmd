@@ -4,7 +4,7 @@ title: "Welcome!"
 
 <link href="./styles.css" rel="stylesheet"></link> 
 
-
+<img class="profile" width="150" height="150" src="yuxin.png" />
 
   Hello! Welcome to my website! My name is Yuxin Yang. I recently graduated from Columbia University with a Master of Science degree, and I majored in statistics during my undergraduate school at the University of Florida. I am currently looking for a full-time position in Data analyst, Data scientist, or Biostatistician.
 
