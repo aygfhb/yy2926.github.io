@@ -6,11 +6,11 @@ title: "Welcome!"
 
 
 
-Hello! My name is Yuxin Yang. I'm a second-year Master's student in Biostatistics at Columbia University's Mailman School of Public Health. Prior to Columbia, I was at University of Florida for Statistics, Mathmetics and Acturial science.
+  Hello! Welcome to my website! My name is Yuxin Yang. I recently graduated from Columbia University with a Master of Science degree, and I majored in statistics during my undergraduate school at the University of Florida. I am currently looking for a full-time position in Data analyst, Data scientist, or Biostatistician.
 
-I'm interested in the development of new analytic statistical techniques and 
+  I am the kind of person who is super passionate about math, number, and data. I'm interested in understanding the complex dataset, working on data, and presenting the result with visualized data. I am experienced with data processing, statistical modeling, and machine learning. I also have a fundamental understanding of deep learning and data mining. I am proficient with R (tidyverse, ggplot, lme4, randomForest, glmnet, R shiny...), Python (Numpy, Scipy, matplotlib, pandas, TensorFlow...), SQL, SAS. I listed several projects, most of them come with the R codes, and some of them done by Python. 
 
-<h1 class="welcome">Featured Projects</h1>
+<h1 class="welcome">Featured Projects</h1> 
 
 ```{r, echo = FALSE, message = FALSE, warning = FALSE }
 library(tidyverse)
@@ -37,5 +37,5 @@ I have a running list of my [other projects](./projects.html) here as well. If i
 <p class="icons">
   <a href="https://github.com/yy2926">`r fa("github")`</a>
   <a href="https://www.linkedin.com/in/yuxin-yang-367010116/">`r fa("linkedin")`</a>
-  <a href="mailto:yy2926@columbia.com">`r fa("envelope")`</a>
+  <a href="mailto:yuxinyang95@gmail.com">`r fa("envelope")`</a>
 </p>
