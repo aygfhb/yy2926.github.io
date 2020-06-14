@@ -2,50 +2,74 @@
 title: "Resume"
 ---
 
-### <b>Education</b>
+```{r, echo = FALSE }
+library(fontawesome)
+```
+
+# `r fa("university")` Education
+
+* **Columbia University, Mailman School of Public Health**: 2018 - 2020
+  * Biostatistics, MS 
+* **University Of Florida**:  2014-2018
+  * Statistics, Mathematics, Acturial Science, BS
+
+# `r fa("briefcase")` Experience
+* Analyst, **Massachusetts General Hospital, Boston, MA, 2019**
+  * Performed extensive research to support doctors regarding healthcare quality and performance improvement.
+  * Used MGH data to prepare and improve statistical models with overall high-cost imaging in Python.
+  * Participated in conducting research and synthesizing MGH data.Successfully increased the efficiency of existing model by 8% regarding AUC score.
+  
+* Research Assistant, **Columbia University, New York City, NY, 2019 - 2020**
+  * Inspected and visualized Bem Sex Role Inventory (BSRI) data to examine psychological androgyny and provide empirical evidence to show the advantage of a shared masculine and feminine personality versus a sex-typed categorization by.
+  * Conducted in-depth research, analyzed findings, and evaluated policy as well as program issues to provide strategic organizational direction and insight. 
+  * Accurately converted the possibly correlated variables by utilizing advance method for data pre-processing.
+  * Provided significant results by conducting effective research and figuring out key components among 45 potential variables.
+  
+* KPI Group Intern, **Accenture Consulting, Shanghai, China, 2015**
+  * Cooperated effectively with team members to construct an ERP system for Shanghai Electric Power Co. Ltd
+  * Updated the company’s internal database regarding 2015’s power supply industry with a focus on leading company in Japan and Singapore
+  * Communicated with department supervisors and input their needs to ameliorate the ERP system
+  
+
+# `r fa("hands-helping")` Volunteer Experience
+
+* Organizer and Communicator, **University of Florida Chinese Student’s Association, Gainesville, FL,2014-2017**
+  * Organized the 2015 Chinese Spring festival gala that had more than 1,000 audience members
+  * Maintained a good relationship and communicated with sponsors to solicited 3,000 dollars every semester from patronage 
+* Student Representative, **We Travel, Gainesville, FL, 2015 - 2016**
+  *	Promoted and sold more than $8,000 worth trip plans to customers 
+  *	Built a strong connection and cooperated with the local store in order to make the company’s information more accessible
+
+# `r fa("fas fa-graduation-cap")`Coursework
+
+* Probability (P8104)
+* Data Science (P8105)
+* Statistical Inference (P8109)
+* Advanced Computational Gentics method (p8119)
+* Biostatistical Methods I & II (P8130 & P8131)
+* Human Population Genetics (P8149)
+* Analysis of Longitudinal Data (P8157)
+* Topics in Advanced Statistical Computing (P8160)
+* Relation Database and SQL Programming (p8180)
+* Consulting Seminar (P8185)
+* Linear Algebra (MAS 4105)
+* Functions oof a Complex Variable (MAA 4402)
+
+# `r fa("fas fa-laptop-code")`Skills,Certifications,Others
+
+* Python
+* R
+* Excel
+* SAS
+* Matlab
+* MySQL
+* Access
+* C++
+* Mandarin 
+* English
+* SAS Certified Base Programmer 
+* SAS Certified Advanced Programmer
+* Society of Actuaries (FM,P)
 
 
-#### <b>University Of Florida</b>, Gainesville, FL<br>
-Aug 2014-May 2018<br>
-Bachelor of Science in Statistics, Mathematics. 
-
-
-#### <b>Experience</b>
-
-
-#### <b>Accenture Consulting</b>, Shanghai, China<br>
-May - Aug 2015<br>
-
-<b>KPI Group Intern</b>
-
-* Cooperated with team members to construct an ERP system for Shanghai Electric Power Co. Ltd
-
-*	Updated the company’s internal database regarding 2015’s power supply industry with a focus on leading company in Japan and Singapore
-
-*	Communicated with department supervisors and input their needs to ameliorate the ERP system
-
-#### <b>University of Florida Chinese Student’s Association </b>, Gainesville, FL<br>
-Sep 2014 - Jan 2017<br>
-
-<b>Organizer and Communicator</b>
-
-*	Organized the 2015 Chinese Spring festival gala that had more than 1,000 audience members
-
-*	Maintained a good relationship and communicated with sponsors to solicited 3,000 dollars every semester from patronage 
-
-#### <b>We Travel </b>, Gainesville, FL<br>
-Dec 2015 – Jul 2016<br>
-
-<b>Campus representative</b>
-
-*	Promoted and sold more than $8,000 worth trip plans to customers 
-
-*	Built a strong connection and cooperated with the local store in order to make the company’s information more accessible
-
-
-#### <b>COMPUTER SKILLS/OTHER</b>
-
-<b>Skills</b>: Proficient in MS Office, C++, MATLAB, R, SAS, Python
-
-<b>Languages</b>: Mandarin (native), English (fluent)
 
