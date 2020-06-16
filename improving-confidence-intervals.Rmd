@@ -108,7 +108,18 @@ boot_smooth <- function(x.train, y.train, x.test, y.test, nboot = 100){
 
 ```
 # Results
+The 95% confidence interval of coefficient estimates of significant associated proteins basedon bootstrap-smoothing is shown as Table 1.Based on the result of bootstrap-smoothing,we found Down Syndrome appears to be as-sociated with 9 proteins as Figure3. 
 
+Among those proteins:
+
+(1)Under-expression :pCAMKIIN,GSK3BN,RAPTORN,GluR3N
+
+(2)Over−expression:ITSN1N,pNR2BN,APPN,TauN,CaNAN
+
+![](./pic/bootstrap_1.png)
+![](./pic/bootstrap_2.png)
+![](./pic/bootstrap_3.png)
+![](./pic/bootstrap_4.png)
 # References 
 
 1. B. Efron. Model selection, estimation, and bootstrap smoothing. Technical Report Stanford University, (262), 2012.
